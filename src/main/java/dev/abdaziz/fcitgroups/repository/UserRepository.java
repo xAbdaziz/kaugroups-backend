@@ -16,8 +16,5 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findById(UUID id);
     Optional<User> findByEmail(String email);
-    
-    @Modifying
-    @Query("UPDATE User u SET u.gender = :gender WHERE u.id = :id")
-    void updateGender(@Param("id") UUID id, @Param("gender") Gender gender);
+    boolean existsByEmail(String email);
 }
