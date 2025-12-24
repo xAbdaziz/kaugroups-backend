@@ -47,23 +47,5 @@ public class GlobalExceptionHandler {
         
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
-
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleUserAlreadyExists(
-            UserAlreadyExistsException ex,
-            HttpServletRequest request) {
-        
-        log.warn("User already exists: {}", ex.getMessage());
-
-        ErrorResponse response = ErrorResponse.of(
-            HttpStatus.CONFLICT.value(),
-             "Conflict",
-              "USER_ALREADY_EXISTS",
-              ex.getMessage(),
-              request.getRequestURI()
-        );
-        
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-    }
 }
 
