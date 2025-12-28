@@ -2,7 +2,9 @@ package dev.abdaziz.kaugroups.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+
 import lombok.*;
+
 import java.util.UUID;
 
 @Entity
