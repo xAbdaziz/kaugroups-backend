@@ -4,18 +4,14 @@ import dev.abdaziz.kaugroups.model.Course;
 import dev.abdaziz.kaugroups.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
-
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,9 +21,13 @@ import java.util.stream.Collectors;
 public class CourseDataLoader implements CommandLineRunner {
 
     private final CourseRepository courseRepository;
+    private final RestTemplate restTemplate;
 
     @Value("${app.data.load-courses:false}")
     private boolean loadCourses;
+
+    @Value("${app.data.load-courses.url}")
+    private String coursesUrl;
 
     @Override
     public void run(String... args) throws Exception {
@@ -36,22 +36,24 @@ public class CourseDataLoader implements CommandLineRunner {
             return;
         }
 
-        try (InputStream inputStream = new ClassPathResource("data/courses.json").getInputStream()) {
-            List<Map<String, String>> coursesData = new ObjectMapper().readValue(
-                    inputStream,
-                    new TypeReference<>() {}
-            );
+        try {
+            CoursesApiResponse response = restTemplate.getForObject(coursesUrl, CoursesApiResponse.class);
+
+            if (response == null || response.getData() == null) {
+                log.warn("No course data received from API.");
+                return;
+            }
 
             Set<String> existingKeys = courseRepository.findAll().stream()
                     .map(c -> c.getCode() + "-" + c.getNumber())
                     .collect(Collectors.toSet());
 
-            List<Course> newCourses = coursesData.stream()
-                    .filter(data -> !existingKeys.contains(data.get("code") + "-" + data.get("number")))
-                    .map(data -> Course.builder()
-                            .code(data.get("code"))
-                            .number(Integer.parseInt(data.get("number")))
-                            .name(data.get("name"))
+            List<Course> newCourses = response.getData().stream()
+                    .filter(courseData -> !existingKeys.contains(courseData.getSubject() + "-" + courseData.getCode()))
+                    .map(courseData -> Course.builder()
+                            .code(courseData.getSubject())
+                            .number(Integer.parseInt(courseData.getCode()))
+                            .name(courseData.getName())
                             .build())
                     .toList();
 
@@ -64,6 +66,20 @@ public class CourseDataLoader implements CommandLineRunner {
             log.error("Failed to load courses: {}", e.getMessage(), e);
             throw e;
         }
+    }
+
+    @Data
+    private static class CoursesApiResponse {
+        private String status;
+        private String termName;
+        private List<CourseData> data;
+    }
+
+    @Data
+    private static class CourseData {
+        private String subject;
+        private String code;
+        private String name;
     }
 }
 
