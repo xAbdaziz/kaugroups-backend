@@ -4,6 +4,7 @@ import dev.abdaziz.kaugroups.dto.request.AddGroupRequest;
 import dev.abdaziz.kaugroups.dto.request.GetGroupsRequest;
 import dev.abdaziz.kaugroups.dto.request.UpdateGroupRequest;
 import dev.abdaziz.kaugroups.exception.BusinessRuleViolationException;
+import dev.abdaziz.kaugroups.exception.ForbiddenException;
 import dev.abdaziz.kaugroups.exception.ResourceNotFoundException;
 import dev.abdaziz.kaugroups.model.Course;
 import dev.abdaziz.kaugroups.model.Gender;
@@ -84,7 +85,7 @@ public class GroupService {
             .orElseThrow(() -> new ResourceNotFoundException("No group found with id: " + id));
         
         if (!group.getUser().getId().equals(user.getId())) {
-            throw new BusinessRuleViolationException(
+            throw new ForbiddenException(
                 "You are not authorized to delete this group. Only the group creator can delete it."
             );
         }
@@ -98,7 +99,7 @@ public class GroupService {
             .orElseThrow(() -> new ResourceNotFoundException("No group found with id: " + id));
 
         if (!group.getUser().getId().equals(user.getId())) {
-            throw new BusinessRuleViolationException(
+            throw new ForbiddenException(
                 "You are not authorized to update this group. Only the group creator can update it."
             );
         }
