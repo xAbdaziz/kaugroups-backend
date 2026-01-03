@@ -27,12 +27,21 @@ public class Group {
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_group_user"))
     private User user;
 
+    @Column
+    private String section;
+
     @Column(nullable = false, unique = true)
     private String link;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Gender gender;
+
+    @Column(nullable = false)
+    private Boolean generalGroup;
+
+    @Column(nullable = false)
+    private Boolean generalGroupMaleAndFemale;
     
 }
 

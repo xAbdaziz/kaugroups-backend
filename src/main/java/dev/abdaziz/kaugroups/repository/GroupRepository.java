@@ -15,6 +15,7 @@ import java.util.UUID;
 public interface GroupRepository extends JpaRepository<Group, UUID> {
     List<Group> findByUser(User user);
     List<Group> findByCourseAndGender(Course course, Gender gender);
+    boolean existsByLink(String link);
 }
 
 

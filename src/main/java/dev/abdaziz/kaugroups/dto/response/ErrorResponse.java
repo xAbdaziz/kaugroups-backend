@@ -1,4 +1,4 @@
-package dev.abdaziz.kaugroups.dto;
+package dev.abdaziz.kaugroups.dto.response;
 
 import java.time.LocalDateTime;
 

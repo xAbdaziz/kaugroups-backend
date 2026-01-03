@@ -1,9 +1,10 @@
 package dev.abdaziz.kaugroups.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
@@ -19,7 +20,8 @@ public class WebConfig implements WebMvcConfigurer {
                     "/auth/**",
                     "/oauth2/**",
                     "/login/**",
-                    "/users/me/gender"
+                    "/users/me/gender",
+                    "/error"
                 );
     }
 }
